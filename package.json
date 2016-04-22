@@ -1,0 +1,19 @@
+{
+  "name": "wordguess_immutable",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "basscss-btn": "^1.1.1",
+    "immutable": "^3.8.0"
+  },
+  "devDependencies": {
+    "react": "^15.0.1",
+    "react-dom": "^15.0.1"
+  }
+}
