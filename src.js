@@ -38,7 +38,8 @@ const wordGuess = (state = initialState, action) => {
         gameEnded: true,
       })
     case 'SET_TARGET_WORD':
-      return state.set('targetWord', action.payload.targetWord.split(''));
+      return state.set('targetWord',
+        action.payload.targetWord.split(''));
     default:
       return state;
   }
@@ -50,7 +51,18 @@ const { Component } = React;
 
 class WordGuess extends Component {
   render() {
-    const { targetWord, guesses, incorrectGuesses, correctGuesses, guessesAllowed, badGuesses, reveal, guessesRemaining, processGuess, alphabet } = this.props;
+    const {
+      targetWord,
+      guesses,
+      incorrectGuesses,
+      correctGuesses,
+      guessesAllowed,
+      badGuesses,
+      reveal,
+      guessesRemaining,
+      processGuess,
+      alphabet
+    } = this.props;
     const loss = badGuesses.size >= guessesAllowed ? true : false;
     const win = guessesRemaining === 0;
     return (
@@ -75,15 +87,21 @@ class WordGuess extends Component {
           </div>
         </div>
         { win ? (<div> Good job! </div>) : null }
-        { loss ? (<div> Sorry, try again.  The word was <b>{ targetWord }</b>. </div>) : null }
+        { loss ? (<div>
+          Sorry, try again.  The word was
+          <b>{ targetWord }</b>.
+          </div>) : null }
         {loss || win ? null :
 <div
-  className="clearfix">
-          <ul class="flex-container">
+  className="flex">
+          <ul className="flex-container">
         { alphabet.map((l, i) =>
            <li
-            className={ badGuesses.has(l) ? 'flex-item btn btn-primary bg-orange btn-big' :
-              correctGuesses.has(l) ? 'flex-item btn btn-primary bg-lime btn-big' : 'flex-item btn btn-primary btn-big' }
+            className={ badGuesses.has(l) ?
+                'flex-item bg-orange' :
+                correctGuesses.has(l) ?
+                'flex-item bg-lime' :
+                'flex-item' }
             key={i}
             onClick={ () => { store.dispatch({
               type: 'GUESS_LETTER',
