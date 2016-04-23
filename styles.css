@@ -15,11 +15,24 @@
   font-family: sans-serif;
   padding: 10px;
   margin: 7px;
-  width: 50px;
-  height: 45px;
+  width: 60px;
+  height: 60px;
   border-radius: 10px;
   font-weight: bold;
   font-size: 2.5em;
   text-align: center;
   box-shadow: 2px 4px 4px #888888;
+}
+
+button
+{
+  background: none;
+  border: none;
+}
+
+body {
+  -webkit-user-select: none;
+  -moz-user-select: -moz-none;
+  -ms-user-select: none;
+  user-select: none;
 }

@@ -9,11 +9,11 @@ const {
 
 const initialState = new Map({
   guessedLetters: new Set(),
-  targetWord: new List('computer'.split('')),
+  targetWord: new List('COMPUTER'.split('')),
   guessesAllowed: 7,
   gameEnded: false,
   message: '',
-  alphabet: 'abcdefghijklmnopqrstuvwxyz'.split('')
+  alphabet: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
 });
 
 const wordGuess = (state = initialState, action) => {
@@ -29,7 +29,7 @@ const wordGuess = (state = initialState, action) => {
       let newWord = window.prompt('New word:');
       return state.merge({
         guessedLetters: new Set(),
-        targetWord: new List(newWord.split('')),
+        targetWord: new List(newWord.toUpperCase().split('')),
         gameEnded: false,
         message: '',
       });
@@ -76,29 +76,30 @@ class WordGuess extends Component {
       </button>
         <progress
           value={badGuesses.size / guessesAllowed}
-          className="progress blue bg-yellow">
+          className="progress"
+          style={{height:'65px', color:'#FF0066', backgroudColor: '#FFFF99'}}>
         </progress>
         <div
           className="flex">
           <div
             className="mx-auto"
-            style={{fontSize:'120px'}}>
+            style={{fontSize:'120px', letterSpacing: '20px'}}>
             { reveal }
           </div>
         </div>
         { win ? (<div> Good job! </div>) : null }
         { loss ? (<div>
           Sorry, try again.  The word was
-          <b>{ targetWord }</b>.
+          <b> { targetWord }</b>.
           </div>) : null }
         {loss || win ? null :
 <div
   className="flex">
-          <ul className="flex-container">
+          <div className="flex-container">
         { alphabet.map((l, i) =>
-           <li
+           <button
             className={ badGuesses.has(l) ?
-                'flex-item bg-orange' :
+                'flex-item bg-red' :
                 correctGuesses.has(l) ?
                 'flex-item bg-lime' :
                 'flex-item' }
@@ -109,9 +110,9 @@ class WordGuess extends Component {
                 guessedLetter: l
               }
             })
-          } }> { l } </li>
+          } }> { l } </button>
         ) }
-        </ul>
+        </div>
       </div> }
       </div>
     );
