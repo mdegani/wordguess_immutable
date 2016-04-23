@@ -79,11 +79,11 @@ class WordGuess extends Component {
         {loss || win ? null :
 <div
   className="clearfix">
-          <div>
+          <ul class="flex-container">
         { alphabet.map((l, i) =>
-           <button
-            className={ badGuesses.has(l) ? 'btn btn-primary bg-orange btn-big' :
-              correctGuesses.has(l) ? 'btn btn-primary bg-lime btn-big' : 'btn btn-primary btn-big' }
+           <li
+            className={ badGuesses.has(l) ? 'flex-item btn btn-primary bg-orange btn-big' :
+              correctGuesses.has(l) ? 'flex-item btn btn-primary bg-lime btn-big' : 'flex-item btn btn-primary btn-big' }
             key={i}
             onClick={ () => { store.dispatch({
               type: 'GUESS_LETTER',
@@ -91,9 +91,9 @@ class WordGuess extends Component {
                 guessedLetter: l
               }
             })
-          } }> { l } </button>
+          } }> { l } </li>
         ) }
-        </div>
+        </ul>
       </div> }
       </div>
     );
