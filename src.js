@@ -13,8 +13,13 @@ const initialState = new Map({
   guessesAllowed: 7,
   gameEnded: false,
   message: '',
-  alphabet: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('')
+  alphabet: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''),
+  rainbow: new List(['red', 'orange', 'yellow', 'green', 'blue', 'purple'])
 });
+
+const rainbowId = (num) => {
+  return num % 6;
+};
 
 const wordGuess = (state = initialState, action) => {
   switch (action.type) {
@@ -40,6 +45,12 @@ const wordGuess = (state = initialState, action) => {
     case 'SET_TARGET_WORD':
       return state.set('targetWord',
         action.payload.targetWord.split(''));
+    case 'COLOR_SHIFT':
+      return state.merge({
+        rainbow : state.get('rainbow')
+          .unshift(state.get('rainbow').last())
+          .setSize(state.get('rainbow').size)
+      })
     default:
       return state;
   }
@@ -61,7 +72,8 @@ class WordGuess extends Component {
       reveal,
       guessesRemaining,
       processGuess,
-      alphabet
+      alphabet,
+      rainbow,
     } = this.props;
     const loss = badGuesses.size >= guessesAllowed ? true : false;
     const win = guessesRemaining === 0;
@@ -81,11 +93,30 @@ class WordGuess extends Component {
         </progress>
         <div
           className="flex">
-          <div
-            className="mx-auto"
-            style={{fontSize:'120px', letterSpacing: '20px'}}>
-            { reveal }
-          </div>
+          {win ?
+             (<div
+              className="mx-auto"
+              style={{fontSize:'120px', letterSpacing: '10px'}}>
+              { reveal.map((r,i) => {
+                return (<span key={i} className={ rainbow.get(rainbowId(i)) } onClick={
+                  () => {
+                    store.dispatch({
+                      type: 'COLOR_SHIFT',
+                    })
+                  }
+                }> { r } </span>);
+              }) }
+            </div>)
+           :
+             (
+               <div
+                className="mx-auto"
+                style={{fontSize:'120px', letterSpacing: '10px'}}>
+                { reveal }
+              </div>
+            )
+          }
+
         </div>
         { win ? (<div> Good job! </div>) : null }
         { loss ? (<div>
@@ -139,6 +170,7 @@ const render = () => {
         lastState.get('guessedLetters').has(t) ? acc : acc + 1 , 0) }
       alphabet = {lastState.get('alphabet')}
       guessesAllowed = { lastState.get('guessesAllowed') }
+      rainbow = {lastState.get('rainbow')}
       />,
     document.getElementById('root')
   )
