@@ -14,7 +14,9 @@ const initialState = new Map({
   gameEnded: false,
   message: '',
   alphabet: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''),
-  rainbow: new List(['red', 'orange', 'yellow', 'green', 'blue', 'purple'])
+  allowedCharacters: new Set('ABCDEFGHIJKLMNOPQRSTUVWXYZ '.split('')),
+  rainbow: new List(['red', 'orange', 'yellow', 'green', 'blue', 'purple']),
+  freeCharacters: new Set([' ']),
 });
 
 const rainbowId = (num) => {
@@ -31,10 +33,12 @@ const wordGuess = (state = initialState, action) => {
       }
       return state;
     case 'CLEAR_GAME':
-      let newWord = window.prompt('New word:');
+      let newWord = window.prompt('New word (letters and spaces only):');
       return state.merge({
         guessedLetters: new Set(),
-        targetWord: new List(newWord.toUpperCase().split('')),
+        targetWord: new List(newWord.toUpperCase().split('')).filter(nw => {
+          return state.get('allowedCharacters').has(nw);
+        }),
         gameEnded: false,
         message: '',
       });
@@ -165,9 +169,11 @@ const render = () => {
         + '(' + lastState.get('guessedLetters')
         .subtract(lastState.get('targetWord')).size + ')' }
       reveal  = { lastState.get('targetWord').map(t =>
-        lastState.get('guessedLetters').has(t) ? t : '-') }
+        lastState.get('guessedLetters').has(t) ||
+        lastState.get('freeCharacters').has(t) ? t : '-') }
       guessesRemaining = { lastState.get('targetWord').reduce((acc, t) =>
-        lastState.get('guessedLetters').has(t) ? acc : acc + 1 , 0) }
+        lastState.get('guessedLetters').has(t) ||
+        lastState.get('freeCharacters').has(t) ? acc : acc + 1 , 0) }
       alphabet = {lastState.get('alphabet')}
       guessesAllowed = { lastState.get('guessesAllowed') }
       rainbow = {lastState.get('rainbow')}
