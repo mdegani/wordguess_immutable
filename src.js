@@ -1,11 +1,12 @@
-const { createStore } = Redux;
+import { createStore } from 'redux';
 
-const {
-  fromJS,
+import {
   Map,
   Set,
   List,
-} = Immutable;
+} from 'immutable';
+
+import './styles.css';
 
 const initialState = new Map({
   guessedLetters: new Set(),
@@ -25,57 +26,56 @@ const rainbowId = (num) => {
 
 const wordGuess = (state = initialState, action) => {
   switch (action.type) {
-    case 'GUESS_LETTER':
-      if(action.payload.guessedLetter.length === 1) {
-        return state.update('guessedLetters', g => {
-          return g.add(action.payload.guessedLetter);
-        });
-      }
-      return state;
-    case 'CLEAR_GAME':
-      let newWord = window.prompt('New word (letters and spaces only):');
-      return state.merge({
-        guessedLetters: new Set(),
-        targetWord: new List(newWord.toUpperCase().split('')).filter(nw => {
-          return state.get('allowedCharacters').has(nw);
-        }),
-        gameEnded: false,
-        message: '',
+  case 'GUESS_LETTER':
+    if (action.payload.guessedLetter.length === 1) {
+      return state.update('guessedLetters', g => {
+        return g.add(action.payload.guessedLetter);
       });
-    case 'END_GAME':
-      return state.merge({
-        gameEnded: true,
-      })
-    case 'SET_TARGET_WORD':
-      return state.set('targetWord',
-        action.payload.targetWord.split(''));
-    case 'COLOR_SHIFT':
-      return state.merge({
-        rainbow : state.get('rainbow')
-          .unshift(state.get('rainbow').last())
-          .setSize(state.get('rainbow').size)
-      })
-    default:
-      return state;
+    }
+    return state;
+  case 'CLEAR_GAME':
+    const newWord = window.prompt('New word (letters and spaces only):');
+    return state.merge({
+      guessedLetters: new Set(),
+      targetWord: new List(newWord.toUpperCase().split('')).filter(nw => {
+        return state.get('allowedCharacters').has(nw);
+      }),
+      gameEnded: false,
+      message: '',
+    });
+  case 'END_GAME':
+    return state.merge({
+      gameEnded: true,
+    });
+  case 'SET_TARGET_WORD':
+    return state.set('targetWord',
+      action.payload.targetWord.split(''));
+  case 'COLOR_SHIFT':
+    return state.merge({
+      rainbow: state.get('rainbow')
+        .unshift(state.get('rainbow').last())
+        .setSize(state.get('rainbow').size),
+    });
+  default:
+    return state;
   }
 };
 
 const store = createStore(wordGuess);
 
-const { Component } = React;
+import React from 'react';
+import {Component} from 'react';
+import ReactDOM from 'react-dom';
 
 class WordGuess extends Component {
   render() {
     const {
       targetWord,
-      guesses,
-      incorrectGuesses,
       correctGuesses,
       guessesAllowed,
       badGuesses,
       reveal,
       guessesRemaining,
-      processGuess,
       alphabet,
       rainbow,
     } = this.props;
@@ -84,29 +84,29 @@ class WordGuess extends Component {
     return (
       <div>
       <button
-        onClick = { () => { store.dispatch(
-          {type: 'CLEAR_GAME',}
-        )}
+        onClick = { () => {
+          store.dispatch({type: 'CLEAR_GAME'});
+        }
       }>
         New Game
       </button>
         <progress
           value={badGuesses.size / guessesAllowed}
           className="progress"
-          style={{height:'65px', color:'#FF0066', backgroudColor: '#FFFF99'}}>
+          style={{height: '65px', color: '#FF0066', backgroudColor: '#FFFF99'}}>
         </progress>
         <div
           className="flex">
           {win ?
              (<div
               className="mx-auto"
-              style={{fontSize:'120px', letterSpacing: '10px'}}>
-              { reveal.map((r,i) => {
+              style={{fontSize: '120px', letterSpacing: '10px'}}>
+              { reveal.map((r, i) => {
                 return (<span key={i} className={ rainbow.get(rainbowId(i)) } onClick={
                   () => {
                     store.dispatch({
                       type: 'COLOR_SHIFT',
-                    })
+                    });
                   }
                 }> { r } </span>);
               }) }
@@ -115,7 +115,7 @@ class WordGuess extends Component {
              (
                <div
                 className="mx-auto"
-                style={{fontSize:'120px', letterSpacing: '10px'}}>
+                style={{fontSize: '120px', letterSpacing: '10px'}}>
                 { reveal }
               </div>
             )
@@ -139,20 +139,34 @@ class WordGuess extends Component {
                 'flex-item bg-lime' :
                 'flex-item' }
             key={i}
-            onClick={ () => { store.dispatch({
-              type: 'GUESS_LETTER',
-              payload:{
-                guessedLetter: l
+            onClick={
+              () => {
+                store.dispatch({
+                  type: 'GUESS_LETTER',
+                  payload: {
+                    guessedLetter: l,
+                  },
+                });
               }
-            })
-          } }> { l } </button>
-        ) }
+            }> { l } </button>
+          ) }
         </div>
       </div> }
       </div>
     );
   }
 }
+
+WordGuess.propTypes = {
+  targetWord: React.PropTypes.instanceOf(List),
+  correctGuesses: React.PropTypes.instanceOf(Set),
+  guessesAllowed: React.PropTypes.number,
+  badGuesses: React.PropTypes.instanceOf(Set),
+  reveal: React.PropTypes.instanceOf(List),
+  guessesRemaining: React.PropTypes.number,
+  alphabet: React.PropTypes.array,
+  rainbow: React.PropTypes.instanceOf(List),
+};
 
 const render = () => {
   const lastState = store.getState();
@@ -173,14 +187,14 @@ const render = () => {
         lastState.get('freeCharacters').has(t) ? t : '-') }
       guessesRemaining = { lastState.get('targetWord').reduce((acc, t) =>
         lastState.get('guessedLetters').has(t) ||
-        lastState.get('freeCharacters').has(t) ? acc : acc + 1 , 0) }
+        lastState.get('freeCharacters').has(t) ? acc : acc + 1, 0) }
       alphabet = {lastState.get('alphabet')}
       guessesAllowed = { lastState.get('guessesAllowed') }
       rainbow = {lastState.get('rainbow')}
       />,
     document.getElementById('root')
-  )
-}
+  );
+};
 
 store.subscribe(render);
 render();

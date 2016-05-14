@@ -1,0 +1,4 @@
+bin/**
+bundle.js
+build/**
+tmp/**
