@@ -94,7 +94,9 @@
 
 	  switch (action.type) {
 	    case 'GUESS_LETTER':
-	      if (action.payload.guessedLetter.length === 1) {
+	      if (state.get('gameEnded')) {
+	        return state;
+	      } else if (action.payload.guessedLetter.length === 1) {
 	        return state.update('guessedLetters', function (g) {
 	          return g.add(action.payload.guessedLetter);
 	        });
@@ -137,6 +139,11 @@
 	  }
 
 	  _createClass(WordGuess, [{
+	    key: 'componentDidMount',
+	    value: function componentDidMount() {
+	      window.addEventListener('keypress', this.keyPressed, false);
+	    }
+	  }, {
 	    key: 'render',
 	    value: function render() {
 	      var _props = this.props;
@@ -243,6 +250,18 @@
 	        )
 	      );
 	    }
+	  }, {
+	    key: 'keyPressed',
+	    value: function keyPressed(e) {
+	      if (e.code.substring(0, 3) === 'Key') {
+	        store.dispatch({
+	          type: 'GUESS_LETTER',
+	          payload: {
+	            guessedLetter: e.code.substring(3, 4)
+	          }
+	        });
+	      }
+	    }
 	  }]);
 
 	  return WordGuess;
@@ -280,6 +299,7 @@
 	};
 
 	store.subscribe(render);
+
 	render();
 
 	/* REACT HOT LOADER */ }).call(this); } finally { if (false) { (function () { var foundReactClasses = module.hot.data && module.hot.data.foundReactClasses || false; if (module.exports && module.makeHot) { var makeExportsHot = require("/Users/markdegani/drafts/wordguess_immutable/node_modules/react-hot-loader/makeExportsHot.js"); if (makeExportsHot(module, require("react"))) { foundReactClasses = true; } var shouldAcceptModule = true && foundReactClasses; if (shouldAcceptModule) { module.hot.accept(function (err) { if (err) { console.error("Cannot not apply hot update to " + "src.js" + ": " + err.message); } }); } } module.hot.dispose(function (data) { data.makeHot = module.makeHot; data.foundReactClasses = foundReactClasses; }); })(); } }
