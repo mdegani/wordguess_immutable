@@ -27,7 +27,9 @@ const rainbowId = (num) => {
 const wordGuess = (state = initialState, action) => {
   switch (action.type) {
   case 'GUESS_LETTER':
-    if (action.payload.guessedLetter.length === 1) {
+    if (state.get('gameEnded')){
+      return state;
+    } else if (action.payload.guessedLetter.length === 1) {
       return state.update('guessedLetters', g => {
         return g.add(action.payload.guessedLetter);
       });
@@ -68,6 +70,11 @@ import {Component} from 'react';
 import ReactDOM from 'react-dom';
 
 class WordGuess extends Component {
+
+  componentDidMount() {
+    window.addEventListener('keypress', this.keyPressed, false);
+  }
+
   render() {
     const {
       targetWord,
@@ -155,6 +162,16 @@ class WordGuess extends Component {
       </div>
     );
   }
+  keyPressed(e) {
+    if (e.code.substring(0, 3) === 'Key') {
+      store.dispatch({
+        type: 'GUESS_LETTER',
+        payload: {
+          guessedLetter: e.code.substring(3, 4),
+        },
+      });
+    }
+  }
 }
 
 WordGuess.propTypes = {
@@ -197,4 +214,5 @@ const render = () => {
 };
 
 store.subscribe(render);
+
 render();
