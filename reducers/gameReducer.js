@@ -14,6 +14,8 @@ const initialState = new Map({
   allowedCharacters: new Set('ABCDEFGHIJKLMNOPQRSTUVWXYZ '.split('')),
   rainbow: new List(['red', 'orange', 'yellow', 'green', 'blue', 'purple']),
   freeCharacters: new Set([' ']),
+  proposedWord: '',
+  showNewGameModal: false,
 });
 
 const wordGuess = (state = initialState, action) => {
@@ -27,8 +29,22 @@ const wordGuess = (state = initialState, action) => {
       });
     }
     return state;
-  case 'CLEAR_GAME':
-    const newWord = window.prompt('New word (letters and spaces only):');
+  // case 'CLEAR_GAME':
+  //   const newWord = window.prompt('New word (letters and spaces only):');
+  //   return state.merge({
+  //     guessedLetters: new Set(),
+  //     targetWord: new List(newWord.toUpperCase().split('')).filter(nw => {
+  //       return state.get('allowedCharacters').has(nw);
+  //     }),
+  //     gameEnded: false,
+  //     message: '',
+  //   });
+  case 'NEW_GAME_MODAL':
+    return state.merge({
+      showNewGameModal: true,
+    });
+  case 'NEW_GAME_FROM_MODAL':
+    const newWord = action.payload.newTargetWord;
     return state.merge({
       guessedLetters: new Set(),
       targetWord: new List(newWord.toUpperCase().split('')).filter(nw => {
@@ -36,6 +52,7 @@ const wordGuess = (state = initialState, action) => {
       }),
       gameEnded: false,
       message: '',
+      showNewGameModal: false,
     });
   case 'END_GAME':
     return state.merge({
@@ -50,6 +67,10 @@ const wordGuess = (state = initialState, action) => {
         .unshift(state.get('rainbow').last())
         .setSize(state.get('rainbow').size),
     });
+  case 'CHANGE_PROPOSED_WORD':
+    console.log('change!');
+    return state.set('proposedWord',
+      action.payload.targetWord);
   default:
     return state;
   }

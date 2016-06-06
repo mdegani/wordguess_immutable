@@ -27,6 +27,8 @@ const render = () => {
       alphabet = {lastState.get('alphabet')}
       guessesAllowed = { lastState.get('guessesAllowed') }
       rainbow = {lastState.get('rainbow')}
+      newGameModalIsVisible = { lastState.get('showNewGameModal')}
+      proposedWord = { lastState.get('proposedWord')}
       store = {store}
       />,
     document.getElementById('root')

@@ -3,6 +3,7 @@ import {Component} from 'react';
 import {
   List,
 } from 'immutable';
+import Modal from './Modal';
 
 import './styles.css';
 
@@ -12,9 +13,9 @@ const rainbowId = (num) => {
 
 class WordGuess extends Component {
 
-  componentDidMount() {
-    window.addEventListener('keypress', this.keyPressed, false);
-  }
+  // componentDidMount() {
+  //   window.addEventListener('keypress', this.keyPressed, false);
+  // }
 
   render() {
     const {
@@ -27,6 +28,8 @@ class WordGuess extends Component {
       alphabet,
       rainbow,
       store,
+      newGameModalIsVisible,
+      proposedWord,
     } = this.props;
     const loss = badGuesses.size >= guessesAllowed ? true : false;
     const win = guessesRemaining === 0;
@@ -34,7 +37,7 @@ class WordGuess extends Component {
       <div>
       <button
         onClick = { () => {
-          store.dispatch({type: 'CLEAR_GAME'});
+          store.dispatch({type: 'NEW_GAME_MODAL'});
         }
       }>
         New Game
@@ -44,6 +47,34 @@ class WordGuess extends Component {
           className="progress"
           style={{height: '65px', color: '#FF0066', backgroudColor: '#FFFF99'}}>
         </progress>
+        <Modal
+          isVisible = { newGameModalIsVisible }>
+          <div>New Word:</div>
+          <input
+            value = { proposedWord }
+            type="text"
+            onChange = {(event) => {
+              store.dispatch({
+                type: 'CHANGE_PROPOSED_WORD',
+                payload: {
+                  targetWord: event.target.value,
+                },
+              });
+            }}/>
+          <button
+            className = "btn btn-primary mb1 bg-blue"
+            onClick = {
+              () => {
+                store.dispatch({
+                  type: 'NEW_GAME_FROM_MODAL',
+                  payload: {
+                    newTargetWord: proposedWord,
+                  },
+                });
+              }
+            }> OK!
+          </button>
+          </Modal>
         <div
           className="flex">
           {win ?
@@ -104,16 +135,16 @@ class WordGuess extends Component {
       </div>
     );
   }
-  keyPressed(e) {
-    if (e.code.substring(0, 3) === 'Key') {
-      store.dispatch({
-        type: 'GUESS_LETTER',
-        payload: {
-          guessedLetter: e.code.substring(3, 4),
-        },
-      });
-    }
-  }
+  // keyPressed(e) {
+  //   if (e.code.substring(0, 3) === 'Key') {
+  //     store.dispatch({
+  //       type: 'GUESS_LETTER',
+  //       payload: {
+  //         guessedLetter: e.code.substring(3, 4),
+  //       },
+  //     });
+  //   }
+  // }
 }
 
 WordGuess.propTypes = {
@@ -125,6 +156,8 @@ WordGuess.propTypes = {
   guessesRemaining: React.PropTypes.number,
   alphabet: React.PropTypes.array,
   rainbow: React.PropTypes.instanceOf(List),
+  newGameModalIsVisible: React.PropTypes.bool,
+  proposedWord: React.PropTypes.string,
   store: React.PropTypes.object,
 };
 
