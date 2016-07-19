@@ -40,7 +40,7 @@ class WordGuess extends Component {
           store.dispatch({type: 'NEW_GAME_MODAL'});
         }
       }>
-        New Game
+        New Game!!
       </button>
         <progress
           value={badGuesses.size / guessesAllowed}
